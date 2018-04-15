@@ -1,3 +1,11 @@
+import pandas as pd
+import numpy as np
+import math
+import matplotlib.pyplot as plt
+import datetime
+import time
+
+
 def UTC2SG(yyyy,mm,dd,hours):
     # J2000，从UTC计算对应的jd_目的是最终算出儒略世纪数
     J2000 = 2451545.0
@@ -53,5 +61,46 @@ def equator2ecliptic(origin,epsilon,key):
     else:
         print('you need to input a key as: \n from equ to ecl , key = 1' + \
         '\n from ec1 to equ , key = 2')
+
+    return output
+
+def F(r0,v0,tao):
+    u = 1/(r0**3);
+    p = (r0*v0)/(r0**2);
+    q = (v0**2)/(r0**2)
+
+    output = 1 - (0.5*u)*tao**2 + (0.5*u*p)*tao**3 \
+    + (1/8*u*q - 1/12*u**2 - 5/8*u*p**2)*tao**4
+
+    return output
+
+def G(r0,v0,tao):
+    u = 1/(r0**3);
+    p = (r0*v0)/(r0**2);
+    q = (v0**2)/(r0**2)
+
+    output = tao - (1/6*u)*tao**3 + (1/4*u*p)*tao**4 \
+    + (3/40*u*q - 1/15*u**2 - 3/8*u*p**2)*tao**5
+
+    return output
+
+def Fpie(r0,v0,tao):
+    u = 1/(r0**3);
+    p = (r0*v0)/(r0**2);
+    q = (v0**2)/(r0**2)
+
+    output = 1 - 1/2*u*tao**2 + u*p*tao**3 \
+    (3/9*u*q - 1/3*u**2 - 15/8*u*p**2)*tao**4
+
+    return output
+
+def Gpie(r0,v0,tao):
+    u = 1/(r0**3);
+    p = (r0*v0)/(r0**2);
+    q = (v0**2)/(r0**2)
+
+    output = -1*u*tao**2 + u*p*tao**2 \
+    + (1/2*u*q - 1/3*u**2 - 5/2*u*p**2)*tao**3 \
+    + (5/4*p*u**2 + 35/8*u*p**3 - 15/8*u*p*q)*tao**4
 
     return output
