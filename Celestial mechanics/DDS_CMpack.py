@@ -8,7 +8,7 @@ import time
 
 def UTC2SG(yyyy,mm,dd,hours):
     # J2000，从UTC计算对应的jd_目的是最终算出儒略世纪数
-    J2000 = 2451545.0
+    # J2000 = 2451545.0
     # J2000：UTC时间2000年1月1日11:58:55.816。
     date_start = datetime.datetime.strptime("2000-1-1 11:58:55","%Y-%m-%d %H:%M:%S")
     Date_str = str(yyyy) +'-'+ str(mm) +'-'+ str(dd)
@@ -103,4 +103,16 @@ def Gpie(r0,v0,tao):
     + (1/2*u*q - 1/3*u**2 - 5/2*u*p**2)*tao**3 \
     + (5/4*p*u**2 + 35/8*u*p**3 - 15/8*u*p*q)*tao**4
 
+    return output
+
+def arctan2(sinE,cosE):
+    # 全平面的反正切函数
+    if sinE >=0 and cosE >=0: # I
+        output = np.arcsin(sinE)
+    elif sinE >=0 and cosE <=0: # II
+        output = np.pi - np.arcsin(sinE)
+    elif sinE <=0 and cosE >=0: # IV
+        output = 2*np.pi + np.arcsin(sinE)
+    else: # III
+        output = np.pi - np.arcsin(sinE)
     return output
