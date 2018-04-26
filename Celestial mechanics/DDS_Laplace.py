@@ -133,3 +133,120 @@ def Calculatefort0(position_fram_fil,obs,t0):
     # print(t0*time_unit)
 
     return r0_a,v0_a
+
+
+def arctan2(sinE,cosE):
+    if sinE >=0 and cosE >=0: # I
+        output = np.arcsin(sinE)
+    elif sinE >=0 and cosE <=0: # II
+        output = np.pi - np.arcsin(sinE)
+    elif sinE <=0 and cosE >=0: # IV
+        output = 2*np.pi + np.arcsin(sinE)
+    else: # III
+        output = np.pi - np.arcsin(sinE)
+    return output
+
+
+def Calculatefor6elements(r0_a,v0_a,t0):
+    # 从第二步开始，因为不需要用到F,G的计算，所以不用再取理论单位，现在取国际单位制
+    # astronomy constants
+    R_earth = 6371e3 # m
+
+    M_earth = 5.965e24 # kg
+    G_graviation = 6.672e-11 # N·m^2 /kg^2
+
+    au = 149597870e3 # m
+    r_station_earth = 0.999102 #*R_earth
+    r_earth_sun = 1*au
+
+    time_unit = 806.81163 #806.8116 # SI
+
+    # miu_GM = 398600.5e-6 # km^3/SI^2
+
+    miu_GM = G_graviation*M_earth # 国际单位制
+
+    # input r0,v0,t0
+    r0 = r0_a*R_earth # unit= m
+    r0_norm = np.sqrt(sum([ i*i for i in r0])) # m
+
+    v0 = v0_a*R_earth/time_unit # unit= m/SI
+    v0_norm = np.sqrt(sum([ i*i for i in v0])) # m/SI
+
+    t0 = t0*time_unit # unit = SI from the first data we have
+    ## t0 根据自己的单位去选择。
+
+    # get a
+
+    a = 1/(2/r0_norm - v0_norm**2/miu_GM) # unit = m
+
+    print('a',a,'m')
+
+    # get n\e\E after a
+    n = np.sqrt(miu_GM/(a**3))
+    print('n:',n,'rad/s','- Not Output')
+
+    tan_E = (1 - r0_norm/a)*(a**2*n)/(np.dot(r0,v0))
+
+    e = np.sqrt( (1 - r0_norm/a)**2 + (np.dot(r0,v0) / (n*a**2))**2 )
+    # e = 0.01002
+    print('e:',e,'Nan')
+
+    # print(1 - r0_norm/a)
+    # print(np.dot(r0,v0) / (n*a**2))
+
+    cos_E = (1 - r0_norm/a)/e
+    sin_E = (np.dot(r0,v0) / (a**2*n))/e
+
+    # print(sin_E,cos_E,tan_E)
+
+    E = arctan2(sin_E,cos_E)
+    print('E:',E,'rad','- Not Output')
+
+    # keplar 定 M
+    M = E - e*sin_E
+    print('M:',M,'rad')
+
+    # 定 i Omega w
+
+    #### method 1
+    P = (cos_E/r0_norm)*r0 - (sin_E/(a*n))*v0
+    Q = (sin_E/(r0_norm)*np.sqrt(1-e**2))*r0 + ((cos_E - e)/(a*n*np.sqrt(1-e**2)))*v0
+    R = np.cross(P,Q)
+
+    cos_i = R[2]
+    tan_Omega = -1*R[0]/R[1]
+
+    # get w ->[-90,+90]
+    tan_w = P[2]/Q[2]
+
+    ############################################################
+
+    #### method 2
+    h = np.cross(r0,v0)
+    h_norm = np.sqrt(np.dot(h,h))
+
+    h_A, h_B, h_C = h[0:3]
+
+    # get cos_i, sin_i
+    cos_i_check = (h_C/h_norm)
+    tan_i = np.sqrt(h_A**2 + h_B**2) / h_C
+
+    sin_i = tan_i*cos_i_check
+
+
+    # get cos_\sin_Omega
+    sin_Omega = h_A/(h_norm*sin_i)
+    cos_Omega = -h_B/(h_norm*sin_i)
+
+    # finally get i Omega w
+
+    i = arctan2(sin_i,cos_i_check)
+
+    Omega = arctan2(sin_Omega,cos_Omega)
+
+    w = np.arctan(tan_w)
+
+    # np.degrees(np.array([i,Omega,w]))
+    print('i,Omega,w:',i,Omega,w,'rad/rad/rad')
+
+    return a,e,M,i,Omega,w,P,Q,R
