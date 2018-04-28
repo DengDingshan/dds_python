@@ -147,29 +147,44 @@ def arctan2(sinE,cosE):
     return output
 
 
-def Calculatefor6elements(r0_a,v0_a,t0):
+def Calculatefor6elements(r0_a,v0_a,t0,key):
     # 从第二步开始，因为不需要用到F,G的计算，所以不用再取理论单位，现在取国际单位制
+    # key == 0,绕太阳旋转； key== 1，绕地球旋转
     # astronomy constants
+
     R_earth = 6371e3 # m
+    au = 149597870e3 # m
 
     M_earth = 5.965e24 # kg
+    M_sun = 1.989e30 # kg
+
     G_graviation = 6.672e-11 # N·m^2 /kg^2
 
-    au = 149597870e3 # m
-    r_station_earth = 0.999102 #*R_earth
     r_earth_sun = 1*au
 
-    time_unit = 806.81163 #806.8116 # SI
+    if key == 0:
+        ## unit for time -> planet
+        time_unit_day = 58.1324409 # Mean solar day
+        time_unit = time_unit_day * 86400
 
-    # miu_GM = 398600.5e-6 # km^3/SI^2
+        miu_GM = G_graviation*M_sun
 
-    miu_GM = G_graviation*M_earth # 国际单位制
+        R_unit = r_earth_sun
+
+    elif key == 1:
+        ### unit for time -> artifact satellite
+        time_unit = 806.81163 #806.8116 # SI
+
+        # miu_GM = 398600.5e-6 # km^3/SI^2
+        miu_GM = G_graviation*M_earth # m^3/SI^2
+
+        R_unit = R_earth
 
     # input r0,v0,t0
-    r0 = r0_a*R_earth # unit= m
+    r0 = r0_a*R_unit # unit= m
     r0_norm = np.sqrt(sum([ i*i for i in r0])) # m
 
-    v0 = v0_a*R_earth/time_unit # unit= m/SI
+    v0 = v0_a*R_unit/time_unit # unit= m/SI
     v0_norm = np.sqrt(sum([ i*i for i in v0])) # m/SI
 
     t0 = t0*time_unit # unit = SI from the first data we have
@@ -185,7 +200,7 @@ def Calculatefor6elements(r0_a,v0_a,t0):
     n = np.sqrt(miu_GM/(a**3))
     print('n:',n,'rad/s','- Not Output')
 
-    tan_E = (1 - r0_norm/a)*(a**2*n)/(np.dot(r0,v0))
+    # tan_E = (1 - r0_norm/a)*(a**2*n)/(np.dot(r0,v0))
 
     e = np.sqrt( (1 - r0_norm/a)**2 + (np.dot(r0,v0) / (n*a**2))**2 )
     # e = 0.01002
@@ -213,8 +228,8 @@ def Calculatefor6elements(r0_a,v0_a,t0):
     Q = (sin_E/(r0_norm)*np.sqrt(1-e**2))*r0 + ((cos_E - e)/(a*n*np.sqrt(1-e**2)))*v0
     R = np.cross(P,Q)
 
-    cos_i = R[2]
-    tan_Omega = -1*R[0]/R[1]
+    # cos_i = R[2]
+    # tan_Omega = -1*R[0]/R[1]
 
     # get w ->[-90,+90]
     tan_w = P[2]/Q[2]
