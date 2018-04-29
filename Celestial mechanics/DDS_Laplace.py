@@ -88,6 +88,8 @@ def Calculatefort0(position_fram_fil,obs,t0,epsilon):
     #     print(np.dot(AA.T.copy(),AA))
     #     print(np.dot(AA.T.copy(),b))
 
+        # print(AA.shape,b.shape)
+
         ans = np.linalg.solve(np.dot(AA.T.copy(),AA),\
                                  np.dot(AA.T.copy(),b))
 
