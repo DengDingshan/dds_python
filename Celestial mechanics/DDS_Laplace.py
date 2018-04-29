@@ -1,14 +1,14 @@
-import pandas as pd
+# import pandas as pd
 import numpy as np
 # import math
 # import matplotlib.pyplot as plt
-import datetime
-import time
+# import datetime
+# import time
 
 import DDS_CMpack as DDS
 
 
-def Calculatefort0(position_fram_fil,obs,t0):
+def Calculatefort0(position_fram_fil,obs,t0,epsilon):
 
     # 为循环重新format，取出需要的数据
     Observe_time = len(position_fram_fil)
@@ -23,7 +23,7 @@ def Calculatefort0(position_fram_fil,obs,t0):
     # set F0 and G0 to begin the loop
 
     F0 = np.ones(Observe_time).tolist()
-    G0 = (position_fram_fil['deltaT'].values - t0).tolist()
+    G0 = (position_fram_fil['formatT'].values - t0).tolist()
 
     FN0 = []; GN0 = []
     P = []; Q = []
@@ -38,7 +38,7 @@ def Calculatefort0(position_fram_fil,obs,t0):
         Niu.append(position_fram_fil['Niu'].values[j])
         Miu.append(position_fram_fil['Miu'].values[j])
         Lambda.append(position_fram_fil['Lambda'].values[j])
-        tao.append(position_fram_fil['deltaT'].values[j] - t0)
+        tao.append(position_fram_fil['formatT'].values[j] - t0)
 
     # np.array(tao)*time_unit
 
@@ -67,17 +67,17 @@ def Calculatefort0(position_fram_fil,obs,t0):
     #################################################################
         # 三次观测，解矩阵得到最终的结果
 
-    #     AA = np.array(A)
-    #     bb = np.array(b)
-
-    #     print(Nwind,b)
-
-    #     ans = np.linalg.solve(AA,bb) #ans 6 位对应(x,y,z,vx,vy,vz)
-
-    #     type(ans)
-    #     r0 = np.sqrt(ans[0]**2 + ans[1]**2 + ans[2]**2)
-    #     v0 = np.sqrt(ans[3]**2 + ans[4]**2 + ans[5]**2)
-    #     print(Nwind,':',r0,v0)
+        # AA = np.array(A)
+        # bb = np.array(b)
+        #
+        # print(Nwind,b)
+        #
+        # ans = np.linalg.solve(AA,bb) #ans 6 位对应(x,y,z,vx,vy,vz)
+        #
+        # # type(ans)
+        # r0 = np.sqrt(ans[0]**2 + ans[1]**2 + ans[2]**2)
+        # v0 = np.sqrt(ans[3]**2 + ans[4]**2 + ans[5]**2)
+        # print(Nwind,':',r0,v0)
 
     #################################################################
         # 多次测量、多资料问题的解法：
@@ -117,7 +117,7 @@ def Calculatefort0(position_fram_fil,obs,t0):
         print(delta_F,delta_G)
         print('--------------------')
 
-        if big_delta < 1e-13:
+        if big_delta < epsilon:
             print('end')
             print(delta_F,delta_G)
             r0_a = np.array([ans[0],ans[1],ans[2]])
