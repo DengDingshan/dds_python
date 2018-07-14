@@ -24,7 +24,7 @@ def Calculatefort0(position_fram_fil,obs,t0,epsilon):
     # set F0 and G0 to begin the loop
 
     F0 = np.ones(Observe_time).tolist()
-    G0 = (position_fram_fil['formatT'].values - t0).tolist()
+    G0 = (position_fram_fil['deltaT'].values - t0).tolist()
 
     FN0 = []; GN0 = []
     P = []; Q = []
@@ -39,7 +39,7 @@ def Calculatefort0(position_fram_fil,obs,t0,epsilon):
         Niu.append(position_fram_fil['Niu'].values[j])
         Miu.append(position_fram_fil['Miu'].values[j])
         Lambda.append(position_fram_fil['Lambda'].values[j])
-        tao.append(position_fram_fil['formatT'].values[j] - t0)
+        tao.append(position_fram_fil['deltaT'].values[j] - t0)
 
     # np.array(tao)*time_unit
 
