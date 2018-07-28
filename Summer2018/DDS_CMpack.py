@@ -43,7 +43,7 @@ def RADEC2xyz(r,RA,DEC):
 def Rx(x):
     import numpy as np
     # x is in the unit of deg, while xx is in the unit of rad
-    xx = x*2*np.pi/360
+    xx = np.deg2rad(x)
     Rx = np.array([[1,0,0],\
                      [0,np.cos(xx),np.sin(xx)],\
                      [0,-np.sin(xx),np.cos(xx)]])
